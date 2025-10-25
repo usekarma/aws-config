@@ -1,0 +1,10 @@
+{
+    "bucket_name": "usekarma.dev-prod",
+    "versioning": true,
+    "force_destroy": true,
+    "enable_encryption": true,
+    "sse_algorithm": "AES256",
+    "block_public_access": true,
+    "enforce_owner": true
+  }
+  
