@@ -3,7 +3,6 @@
   "az_count": 2,
   "enable_ssm_endpoints": true,
   "single_nat_gateway": true,
-  "default_sg_name": "usekarma-dev-sg-default",
   "default_sg_allow_self": false,
   "default_sg_extra_ingress_cidrs": ["203.0.113.42/32"],
   "tags": {

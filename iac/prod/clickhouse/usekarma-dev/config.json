@@ -1,6 +1,6 @@
 {
   "nickname": "use-karma-dev",
-  "vpc_runtime_path": "/iac/vpc/use-karma-dev/runtime",
+  "vpc_nickname": "usekarma-dev",
 
   "instance_type": "m6i.large",
   "ebs_size_gb": 500,
@@ -8,19 +8,17 @@
   "allowed_security_group_ids": [],
   "allowed_cidrs": [],
 
-  "create_dns_record": true,
-  "hosted_zone_id": "Z1234567890ABC",
-  "record_name": "clickhouse.usekarma.dev.",
-
-  "create_backup_bucket": false,
-  "backup_bucket_name": "usekarma-clickhouse-backups",
-  "backup_prefix": "prod/clickhouse",
+  "s3_bucket_nickname": "usekarma-dev",
+  "s3_bucket_prefix": "clickhouse",
 
   "msk_enable": true,
-  "msk_cluster_name": "use-karma-dev-msk-srvless",
-  "msk_topic_name": "ch_ingest",
+  "msk_topic_name": "clickhouse_ingest",
   "msk_topic_partitions": 3,
   "msk_topic_retention_ms": 604800000,
+
+  "kafka_version": "3.7.0",
+  "debezium_mongodb_version": "2.6.1.Final",
+  "aws_msk_iam_auth_version": "1.1.8",
 
   "tags": { "Environment": "prod", "Project": "clickhouse", "Owner": "usekarma" }
 }
