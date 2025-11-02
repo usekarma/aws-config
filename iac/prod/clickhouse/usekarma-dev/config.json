@@ -1,5 +1,4 @@
 {
-  "nickname": "use-karma-dev",
   "vpc_nickname": "usekarma-dev",
 
   "instance_type": "m6i.large",

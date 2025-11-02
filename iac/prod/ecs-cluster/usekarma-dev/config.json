@@ -1,0 +1,28 @@
+{
+    "vpc_nickname": "usekarma-dev",
+
+    "enable_execute_command": true,
+    "exec_logging": "OVERRIDE",
+    "create_log_group": true,
+    "log_retention_days": 14,
+    "enable_container_insights": true,
+    "capacity_providers": [
+        "FARGATE",
+        "FARGATE_SPOT"
+    ],
+    "default_capacity_strategy": [
+        {
+            "capacity_provider": "FARGATE",
+            "weight": 1
+        },
+        {
+            "capacity_provider": "FARGATE_SPOT",
+            "weight": 1
+        }
+    ],
+    "tags": {
+        "Environment": "prod",
+        "Project": "usekarma",
+        "Owner": "usekarma"
+    }
+}
