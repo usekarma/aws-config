@@ -19,5 +19,19 @@
   "debezium_mongodb_version": "2.6.1.Final",
   "aws_msk_iam_auth_version": "1.1.8",
 
+  "ecs_cluster_nickname": "usekarma-dev",
+
+  "kconnect_service_name": "clickhouse-kconnect",
+  "kconnect_desired_count": 1,
+  "kconnect_cpu": 1024,
+  "kconnect_memory": 2048,
+  "kconnect_platform_version": "1.4.0",
+  "kconnect_assign_public_ip": false,
+
+  "kconnect": {
+    "image": "debezium/connect:2.7",
+    "port": 8083
+  },
+
   "tags": { "Environment": "prod", "Project": "clickhouse", "Owner": "usekarma" }
 }
