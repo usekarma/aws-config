@@ -28,10 +28,5 @@
   "kconnect_platform_version": "1.4.0",
   "kconnect_assign_public_ip": false,
 
-  "kconnect": {
-    "image": "debezium/connect:2.7",
-    "port": 8083
-  },
-
   "tags": { "Environment": "prod", "Project": "clickhouse", "Owner": "usekarma" }
 }
