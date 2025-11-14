@@ -1,0 +1,12 @@
+{
+    "user_pool_name": "usekarma-obs-pool",
+    "client_name": "usekarma-obs-client",
+    "domain_prefix": "usekarma-obs",
+    "callback_hosts": [
+        "grafana.usekarma.dev",
+        "prometheus.usekarma.dev",
+        "clickhouse.usekarma.dev",
+        "mongo.usekarma.dev",
+        "redpanda.usekarma.dev"
+    ]
+}

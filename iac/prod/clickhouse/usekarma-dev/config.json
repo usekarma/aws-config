@@ -10,10 +10,7 @@
   "s3_bucket_nickname": "usekarma-dev",
   "s3_bucket_prefix": "clickhouse",
 
-  "msk_enable": true,
-  "msk_topic_name": "clickhouse_ingest",
-  "msk_topic_partitions": 3,
-  "msk_topic_retention_ms": 604800000,
+  "cognito_sso_nickname": "usekarma-dev",
 
   "kafka_version": "3.7.0",
   "debezium_mongodb_version": "2.6.1.Final",
@@ -27,6 +24,8 @@
   "kconnect_memory": 2048,
   "kconnect_platform_version": "1.4.0",
   "kconnect_assign_public_ip": false,
+
+  "clickhouse_only": false,
 
   "tags": { "Environment": "prod", "Project": "clickhouse", "Owner": "usekarma" }
 }
