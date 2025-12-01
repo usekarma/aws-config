@@ -22,7 +22,10 @@
         "runtime": "python3.10",
         "handler": "main.handler",
         "memory_size": 1024,
-        "timeout": 10
+        "timeout": 900,
+        "src_type": "clickhouse",
+        "src_nickname": "usekarma-dev",
+        "vpc_nickname": "usekarma-dev"
       }
     },
     "tags": {
