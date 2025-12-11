@@ -1,5 +1,6 @@
 {
   "cidr": "10.42.0.0/16",
+  "dhcp_domain_name": "svc.usekarma.local",
   "az_count": 2,
   "enable_ssm_endpoints": true,
   "single_nat_gateway": true,
