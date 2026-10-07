@@ -52,4 +52,3 @@ See architecture-assessment.md, evidence-and-evaluation.md and verification.md.
 - `tests/test_postflight.py`
 - `tests/test_safety.py`
 - `tests/test_schemas.py`
-
