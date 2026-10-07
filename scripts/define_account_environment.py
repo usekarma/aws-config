@@ -3,7 +3,7 @@
 import argparse
 import json
 import pathlib
-import boto3
+from mutation_guard import approved_session, check_local_binding
 import sys
 import os
 
@@ -14,7 +14,9 @@ def load_environment_config(file_path):
         return json.load(f)
 
 def write_environment_param(env_dict, param_name=f"{get_prefix()}/environment"):
-    ssm = boto3.client("ssm")
+    session = approved_session(require_binding=False)
+    check_local_binding(env_dict)
+    ssm = session.client("ssm")
     print(f"Writing parameter {param_name} to SSM Parameter Store...")
     ssm.put_parameter(
         Name=param_name,
@@ -28,7 +30,7 @@ def write_environment_param(env_dict, param_name=f"{get_prefix()}/environment"):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", required=True, help="Environment name (e.g. dev, prod)")
-    parser.add_argument("--path", default="account_environments", help="Path to environment files")
+    parser.add_argument("--path", default=str(pathlib.Path(__file__).resolve().parents[1] / "account_environments"), help="Path to environment files")
     parser.add_argument("--param-name", default=f"{get_prefix()}/environment", help="Parameter Store name to write")
     args = parser.parse_args()
 

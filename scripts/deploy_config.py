@@ -3,14 +3,14 @@
 import argparse
 import json
 import pathlib
-import boto3
+from mutation_guard import approved_session
 import sys
 import os
 
 get_prefix = lambda: os.getenv("IAC_PREFIX", "/iac")
 
 def get_environment_metadata(param_name=None):
-    ssm = boto3.client("ssm")
+    ssm = approved_session().client("ssm")
     param_name = param_name or f"{get_prefix()}/environment"
     try:
         response = ssm.get_parameter(Name=param_name, WithDecryption=False)
@@ -22,13 +22,13 @@ def get_environment_metadata(param_name=None):
         sys.exit(f"❌ Failed to load environment parameter {param_name}: {e}")
 
 def load_config(env_type, component, nickname):
-    config_file = pathlib.Path("iac") / env_type / component / nickname / "config.json"
+    config_file = pathlib.Path(__file__).resolve().parents[1] / "iac" / env_type / component / nickname / "config.json"
     if not config_file.exists():
         sys.exit(f"❌ Missing config file: {config_file}")
     return json.loads(config_file.read_text())
 
 def write_param(param_name, config_data):
-    ssm = boto3.client("ssm")
+    ssm = approved_session().client("ssm")
     try:
         ssm.put_parameter(
             Name=param_name,

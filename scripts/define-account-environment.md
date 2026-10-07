@@ -1,94 +1,28 @@
-# `define_account_environment.py` – Define Environment Parameter
+# Define an account environment binding
 
-This script publishes a JSON environment binding to AWS Systems Manager Parameter Store.  
-It must be run once per AWS account to define which environment it belongs to.
+`define_account_environment.py` writes or overwrites an SSM String parameter.
+It is a consequential AWS mutation requiring explicit human approval.
+Read [the repository workflow](../docs/agent-workflow.md) first.
 
-This is a required step before any configuration or infrastructure can be deployed using the **Adage** deployment framework.
+Set AWS_PROFILE, AWS_REGION, EXPECTED_AWS_ACCOUNT, EXPECTED_ENVIRONMENT and
+EXPECTED_BINDING to independently confirmed values. After approval, the human
+operator acknowledges it with AWS_MUTATION_APPROVED=1. The script verifies STS
+identity and compares the local binding's exact name/environment before writing.
+First-time creation cannot check an existing SSM binding; review the old value
+when changing an existing binding.
 
----
+Use the actual binding filename stem, for example:
+`python3 scripts/define_account_environment.py --env usekarma-dev-prod`.
+This loads `account_environments/usekarma-dev-prod.json` and publishes it to
+`${IAC_PREFIX:-/iac}/environment`. `--path` selects another local binding directory;
+`--param-name` explicitly selects a different reviewed parameter path. There is
+no `--prefix` option; set IAC_PREFIX before starting the process.
 
-## 📌 What It Does
+The checked-in files contain name, environment, repository/branch references
+and policy metadata. These flags are not enforced by the current publisher.
+IAM must restrict writes, especially to production binding parameters.
 
-- Loads a file like `account_environments/dev.json`
-- Publishes it as a single string to SSM Parameter Store
-- Default parameter path: `/iac/environment`
-- You can override the prefix with `IAC_PREFIX`, or override the full name with `--param-name`
-
----
-
-## ✅ Usage
-
-```bash
-AWS_PROFILE=dev-iac python scripts/define_account_environment.py --env dev
-```
-
-This publishes `account_environments/dev.json` to:
-
-```
-/iac/environment
-```
-
----
-
-## 🔀 Optional Overrides
-
-### Use a different file path:
-
-```bash
---path ./my/custom/env/defs
-```
-
-### Override the default prefix (`/iac`) using an environment variable:
-
-```bash
-IAC_PREFIX=/karma AWS_PROFILE=prod-iac python scripts/define_account_environment.py --env prod
-```
-
-This will publish to:
-
-```
-/karma/environment
-```
-
-*(Note: `IAC_PREFIX` is evaluated at script startup time)*
-
-### Manually override the full parameter path:
-
-```bash
---param-name /alt/structure/environment
-```
-
-This skips prefix logic and writes directly to the given name.
-
----
-
-## 🧾 Example JSON (Environment Definition)
-
-```json
-{
-  "name": "dev",
-  "config_repo": "usekarma/aws-config",
-  "config_branch": "main",
-  "nicknames": ["dev", "sandbox"],
-  "tags": {
-    "owner": "platform-team"
-  }
-}
-```
-
-This will be stored as a **single string parameter** in Parameter Store.
-
----
-
-## 🛡️ Best Practices
-
-- Lock down the environment parameter (`/iac/environment`) via IAM in production
-- Use Git history to manage and review changes to `account_environments/*.json`
-- Avoid editing the parameter manually in the AWS Console
-
----
-
-## Related Scripts
-
-- [`validate_account_environment.py`](validate_account_environment.py) – checks if the parameter is set and valid
-- [`deploy_config.py`](deploy_config.py) – uses this parameter to determine what config to deploy
+After approved publication, run the read-only comparison:
+`python3 scripts/validate_account_environment.py --env usekarma-dev-prod`.
+Do not paste live binding/config output containing sensitive values into chat/logs.
+An agent may prepare and verify changes but cannot authorize or execute the write.
