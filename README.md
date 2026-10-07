@@ -34,7 +34,7 @@ Read [AGENTS.md](AGENTS.md), [the workflow](docs/agent-workflow.md), and
 [specs/TEMPLATE.md](specs/TEMPLATE.md) for resource, security, migration or cleanup
 work. A short PR description is enough for a small documentation edit.
 
-Prerequisites for local gates: Bash, Git, Python 3.12+, ShellCheck 0.11.0.
+Prerequisites for local gates: Bash, Git, Python 3.12+ and hash-locked verification tools.
 Existing AWS Python tools additionally need boto3 installed in the operator's environment.
 
 ```bash
@@ -46,7 +46,8 @@ python3 scripts/validate_config.py --config clickhouse/usekarma-dev
 Verification makes no AWS calls: all JSON, duplicate-key rejection, binding field
 types, config structure/tags, Python/shell syntax, changed shell lint, credential
 patterns and mocked safety tests. The optional sibling path checks component names.
-It is structural validation, not a complete schema for every module input.
+It validates explicit per-component JSON schemas, bindings and local dependencies.
+See schemas/README.md for optional fields and extension rules.
 CI runs this gate without cloud credentials or deployment steps.
 
 ## Preflight and approval
@@ -90,7 +91,8 @@ or `--param-name` to select the parameter; there is no `--prefix` option in this
 
 Privately compare the published parameter with the approved JSON and record its
 SSM version. `python3 scripts/validate_account_environment.py --env usekarma-dev-prod`
-checks the binding against its local file. Read tools print full config values:
+checks the binding against its local file. In AGENT_MODE=1, read_config prints only parameter version/hash after preflight,
+and binding comparisons suppress values. Human read tools can print full config:
 do not paste secret-bearing output into logs/chat. Verify downstream plans, preserved
 resources and health as appropriate. Restore an older SSM value only after approval;
 then generate a new IaC plan. A config rollback does not restore deleted data.
@@ -98,3 +100,22 @@ then generate a new IaC plan. A config rollback does not restore deleted data.
 SPEC → inspect → implement → verify → plan/review → **human approval** → publish/apply
 → read-only postflight → observe. See [the illustrative cleanup spec](specs/clickhouse-cleanup.example.md)
 for the boundary between config preparation and destructive execution in aws-iac.
+
+## Agent-first commands and evidence
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install --require-hashes -r requirements-dev.lock
+export AGENT_MODE=1
+make verify
+make test
+make demo
+```
+
+The lock targets Python 3.12/Linux x86_64. Terraform/Terragrunt remain separate
+prerequisites in aws-iac. Agent mode blocks mutation even with inherited approval.
+The legacy deploy default remains apply for human compatibility; agents use explicit
+planning/validation. See [architecture assessment](docs/architecture-assessment.md)
+and [evidence, postflight and metrics](docs/evidence-and-evaluation.md).
+Raw plans and generated evidence belong in ignored artifacts/ or another private path.

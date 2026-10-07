@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cognito-sso configuration",
+  "type": "object",
+  "minProperties": 1,
+  "properties": {
+    "user_pool_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "client_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "domain_prefix": {
+      "type": "string",
+      "minLength": 1
+    },
+    "callback_hosts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "allowed_oauth_flows": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "allowed_oauth_scopes": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "auto_verified_attributes": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "logout_uri": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "logout_urls": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "password_min_length": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "require_lowercase": {
+      "type": "boolean"
+    },
+    "require_numbers": {
+      "type": "boolean"
+    },
+    "require_symbols": {
+      "type": "boolean"
+    },
+    "require_uppercase": {
+      "type": "boolean"
+    },
+    "supported_identity_providers": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

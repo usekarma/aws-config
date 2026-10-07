@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "lambda configuration",
+  "type": "object",
+  "minProperties": 1,
+  "properties": {
+    "functions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "runtime": {
+            "type": "string",
+            "minLength": 1
+          },
+          "handler": {
+            "type": "string",
+            "minLength": 1
+          },
+          "memory_size": {
+            "type": "integer",
+            "minimum": 128,
+            "maximum": 10240
+          },
+          "timeout": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 900
+          },
+          "src_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "src_nickname": {
+            "type": "string",
+            "minLength": 1
+          },
+          "vpc_nickname": {
+            "type": "string",
+            "minLength": 1
+          },
+          "environment": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "functions"
+  ],
+  "additionalProperties": false
+}

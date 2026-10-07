@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "s3-bucket configuration",
+  "type": "object",
+  "minProperties": 1,
+  "properties": {
+    "bucket_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "versioning": {
+      "type": "boolean"
+    },
+    "force_destroy": {
+      "type": "boolean"
+    },
+    "enable_encryption": {
+      "type": "boolean"
+    },
+    "sse_algorithm": {
+      "type": "string",
+      "minLength": 1
+    },
+    "block_public_access": {
+      "type": "boolean"
+    },
+    "enforce_owner": {
+      "type": "boolean"
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "bucket_name"
+  ],
+  "additionalProperties": false
+}
