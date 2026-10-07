@@ -4,11 +4,13 @@
   "properties": {
     "name": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_-]+$"
     },
     "environment": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_-]+$"
     },
     "config_repo": {
       "type": "string",
