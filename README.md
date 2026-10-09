@@ -119,3 +119,10 @@ The legacy deploy default remains apply for human compatibility; agents use expl
 planning/validation. See [architecture assessment](docs/architecture-assessment.md)
 and [evidence, postflight and metrics](docs/evidence-and-evaluation.md).
 Raw plans and generated evidence belong in ignored artifacts/ or another private path.
+
+Lambda ownership: `aws-lambda` produces runtime packages; `aws-config` declares
+runtime, sizing, environment and immutable artifact metadata; `aws-iac` implements
+Lambda/IAM/integrations. Artifact metadata comes from a separately authorized
+publisher. Unresolved declarations are explicit planning inputs and cannot be
+published. See [Lambda contracts](schemas/README.md) and the
+[IoT desired state](docs/iot-digital-twin-sandbox.md).
