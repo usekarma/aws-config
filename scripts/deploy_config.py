@@ -4,7 +4,7 @@ import argparse
 import json
 import pathlib
 from mutation_guard import approved_session
-from config_validation import ROOT, load_json, validate_config
+from config_validation import ROOT, load_json, validate_config, validate_deployment_readiness
 import sys
 import os
 
@@ -39,10 +39,12 @@ def load_config(env_type, component, nickname):
         sys.exit(f"❌ Missing config file: {config_file}")
     value = load_json(config_file)
     validate_config(config_file.relative_to(ROOT), value)
+    validate_deployment_readiness(value, component)
     return value
 
 
 def write_param(param_name, config_data):
+    validate_deployment_readiness(config_data, param_name.rstrip("/").split("/")[-3])
     ssm = approved_session().client("ssm")
     try:
         ssm.put_parameter(

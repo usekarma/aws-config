@@ -5,7 +5,7 @@ import argparse
 import re
 import sys
 
-from config_validation import ROOT, load_json, validate_config
+from config_validation import ROOT, load_json, validate_config, validate_deployment_readiness
 
 
 def main():
@@ -14,6 +14,9 @@ def main():
         "--config", help="Component/nickname; omit to validate all bindings/configs"
     )
     parser.add_argument("--environment", help="Explicit local environment filter")
+    parser.add_argument(
+        "--deployment-ready", action="store_true", help="Reject incomplete Lambda declarations"
+    )
     args = parser.parse_args()
     if args.config and not re.fullmatch(r"[a-z0-9-]+/[a-zA-Z0-9_-]+", args.config):
         parser.error("--config must be component/nickname")
@@ -26,7 +29,11 @@ def main():
     if not files:
         raise ValueError("No matching configuration found")
     for path in sorted(files):
-        validate_config(path.relative_to(ROOT), load_json(path))
+        value = load_json(path)
+        relative = path.relative_to(ROOT)
+        validate_config(relative, value)
+        if args.deployment_ready and relative.parts[0] == "iac":
+            validate_deployment_readiness(value, relative.parts[2])
     print(f"Validated {len(files)} configuration/binding files against local contracts.")
 
 

@@ -27,5 +27,24 @@
         "Environment": "dev",
         "Project": "iot-digital-twin",
         "Owner": "human-review-required"
+    },
+    "ingest_function": {
+        "runtime": "python3.12",
+        "handler": "app.lambda_handler",
+        "memory_size": 512,
+        "timeout": 30,
+        "log_retention_days": 14,
+        "artifact": null,
+        "planning_dependencies": [
+            "artifact_publication",
+            "trusted_principal"
+        ],
+        "environment": {
+            "EXPECTED_DEVICE_ID": "core2-aws-001",
+            "LATEST_STATE_TABLE": "iot-digital-twin-latest-state",
+            "MAX_CLOCK_SKEW_SECONDS": "10",
+            "ACCEL_MOTION_THRESHOLD_G": "0.15",
+            "GYRO_MOTION_THRESHOLD_DPS": "5"
+        }
     }
 }
