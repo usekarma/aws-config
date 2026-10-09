@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "currency": "USD",
+  "measurement": {
+    "metric": "UnblendedCost",
+    "granularity": "MONTHLY",
+    "scope": "recurring steady-state AWS spend"
+  },
+  "acceptance_criteria": {
+    "account_for_all_recurring_spend": true,
+    "max_unattributed_usd": "0.00",
+    "remediation_mode": "proposal_only",
+    "allow_destructive_actions": false
+  },
+  "targets": [
+    {
+      "id": "strall.com",
+      "account_environment": "strall-com-prod",
+      "region": "us-east-1",
+      "monthly_target_usd": "0.51",
+      "config_roots": [
+        "iac/prod/serverless-site/strall-com",
+        "iac/prod/route53-zone/strall-com"
+      ]
+    },
+    {
+      "id": "usekarma.dev",
+      "account_environment": "usekarma-dev-prod",
+      "region": "us-east-1",
+      "monthly_target_usd": "0.61",
+      "config_roots": [
+        "iac/prod/serverless-site/usekarma-dev",
+        "iac/prod/route53-zone/usekarma-dev"
+      ]
+    }
+  ],
+  "combined_monthly_target_usd": "1.12"
+}
