@@ -1,65 +1,55 @@
 #!/usr/bin/env python3
-"""Compatibility checks for configuration contracts.
-
-This module is intentionally kept import-safe and side-effect free so it can be
-used both as a CLI script and as a regular Python module in the test suite.
-"""
-
-from __future__ import annotations
+"""Verify that aws-iac explicitly supports this aws-config contract version."""
 
 import argparse
 import json
 from pathlib import Path
-from typing import Any, Sequence
-
-__all__ = [
-    "check_compatibility",
-    "main",
-    "validate_compatibility",
-    "validate_contract_compatibility",
-]
 
 
-def validate_contract_compatibility(value: Any, *, expected: Any | None = None) -> bool:
-    """Return True when a contract-compatible value is accepted.
+def load_json(path):
+    try:
+        return json.loads(Path(path).read_text())
+    except FileNotFoundError as exc:
+        raise ValueError(f"Missing contract file: {path}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid JSON in {path}: {exc}") from exc
 
-    The project treats compatibility validation as a read-only structural check and
-    does not mutate AWS state or other external systems.
-    """
-    if value is None:
-        raise ValueError("contract payload is required")
-    if expected is not None:
-        return value == expected
-    if isinstance(value, (str, bytes)):
-        return bool(value)
-    if isinstance(value, dict):
-        return all(
-            isinstance(key, (str, int)) and validate_contract_compatibility(item)
-            for key, item in value.items()
+
+def check_compatibility(aws_config_dir, aws_iac_dir):
+    config_contract = load_json(Path(aws_config_dir) / "contracts" / "config-contract.json")
+    iac_compatibility = load_json(
+        Path(aws_iac_dir) / "contracts" / "aws-config-compatibility.json"
+    )
+
+    if config_contract.get("contract_name") != "aws-config":
+        raise ValueError("aws-config contract_name must be aws-config")
+    if iac_compatibility.get("contract_name") != "aws-config":
+        raise ValueError("aws-iac compatibility contract_name must be aws-config")
+
+    version = config_contract.get("contract_version")
+    if not isinstance(version, int) or version < 1:
+        raise ValueError("aws-config contract_version must be a positive integer")
+
+    supported = iac_compatibility.get("supported_contract_versions")
+    if not isinstance(supported, list) or not supported or any(
+        not isinstance(item, int) or item < 1 for item in supported
+    ):
+        raise ValueError("supported_contract_versions must be a non-empty list of positive integers")
+    if version not in supported:
+        raise ValueError(
+            f"aws-iac does not support aws-config contract version {version}; supports {supported}"
         )
-    if isinstance(value, (list, tuple, set)):
-        return all(validate_contract_compatibility(item) for item in value)
-    return True
+    return version
 
 
-validate_compatibility = validate_contract_compatibility
-check_compatibility = validate_contract_compatibility
-
-
-def main(argv: Sequence[str] | None = None) -> int:
+def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("path", nargs="?", help="Optional JSON file to validate")
-    args = parser.parse_args(argv)
-
-    if args.path:
-        payload = json.loads(Path(args.path).read_text())
-        is_compatible = validate_contract_compatibility(payload)
-        print("contract compatible" if is_compatible else "contract incompatible")
-        return 0 if is_compatible else 1
-
-    print("contract compatibility validation ok")
-    return 0
+    parser.add_argument("--aws-config-dir", required=True, type=Path)
+    parser.add_argument("--aws-iac-dir", required=True, type=Path)
+    args = parser.parse_args()
+    version = check_compatibility(args.aws_config_dir, args.aws_iac_dir)
+    print(f"aws-config contract version {version} is supported by aws-iac")
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()

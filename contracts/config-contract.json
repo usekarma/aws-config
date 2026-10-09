@@ -1,0 +1,7 @@
+{
+  "contract_name": "aws-config",
+  "contract_version": 1,
+  "schema_standard": "https://json-schema.org/draft/2020-12/schema",
+  "schema_directory": "schemas",
+  "compatibility_policy": "Breaking configuration-schema changes require a contract_version increment; aws-iac must explicitly declare support before consuming the new version."
+}
