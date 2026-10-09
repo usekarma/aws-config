@@ -3,10 +3,16 @@
 import argparse
 import json
 import pathlib
-from mutation_guard import approved_session
 from config_validation import ROOT, load_json, validate_config, validate_deployment_readiness
 import sys
 import os
+
+
+def approved_session():
+    """Load AWS dependencies only when entering the guarded publication path."""
+    from mutation_guard import approved_session as guarded_session
+
+    return guarded_session()
 
 
 def get_prefix():

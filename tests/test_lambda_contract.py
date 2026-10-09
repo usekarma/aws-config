@@ -4,6 +4,7 @@ import base64
 import copy
 from pathlib import Path
 import sys
+import subprocess
 from unittest import mock
 import unittest
 
@@ -40,6 +41,31 @@ class LambdaContractTests(unittest.TestCase):
         value = {"functions": {"iot-digital-twin-ingest": declaration()}}
         validation.schema_validate(value, "lambda", "fixture")
         validation.validate_deployment_readiness(value, "lambda")
+
+    def test_publisher_import_and_config_loading_do_not_load_aws_dependencies(self):
+        # A fresh interpreter avoids dependencies cached by other tests.
+        # Use an explicit script path rather than relying on the suite's PYTHONPATH.
+        script = """
+import sys
+sys.path.insert(0, 'scripts')
+import deploy_config
+try:
+    deploy_config.load_config('dev', 'iot-digital-twin', 'core2-aws-001')
+except ValueError as error:
+    assert 'Deployment blocked' in str(error)
+else:
+    raise AssertionError('Unresolved declaration accepted')
+assert 'mutation_guard' not in sys.modules
+assert 'boto3' not in sys.modules
+assert 'botocore' not in sys.modules
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            cwd=validation.ROOT,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_embedded_schemas_match_pinned_contracts(self):
         complete = validation.load_json(validation.ROOT / "schemas/lambda-declaration.schema.json")
