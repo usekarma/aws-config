@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "serverless-site configuration",
+  "type": "object",
+  "minProperties": 1,
+  "properties": {
+    "site_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "content_bucket_prefix": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cloudfront_comment": {
+      "type": "string",
+      "minLength": 1
+    },
+    "index_document": {
+      "type": "string",
+      "minLength": 1
+    },
+    "error_document": {
+      "type": "string",
+      "minLength": 1
+    },
+    "enable_custom_domain": {
+      "type": "boolean"
+    },
+    "domain_aliases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "route53_zone_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "content_bucket_prefix",
+    "cloudfront_comment"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "enable_custom_domain": {
+            "const": true
+          }
+        },
+        "required": [
+          "enable_custom_domain"
+        ]
+      },
+      "then": {
+        "required": [
+          "route53_zone_name",
+          "domain_aliases"
+        ]
+      }
+    }
+  ]
+}

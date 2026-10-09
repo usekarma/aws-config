@@ -12,4 +12,4 @@ COMPONENT="$1"
 NICKNAME="$2"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-"$SCRIPT_DIR/deploy_config.py" --component "$COMPONENT" --nickname "$NICKNAME"
+python3 "$SCRIPT_DIR/deploy_config.py" --component "$COMPONENT" --nickname "$NICKNAME"

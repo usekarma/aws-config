@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "grafana configuration",
+  "type": "object",
+  "minProperties": 1,
+  "properties": {
+    "nickname": {
+      "type": "string",
+      "minLength": 1
+    },
+    "iac_prefix": {
+      "type": "string",
+      "minLength": 1
+    },
+    "vpc_runtime_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "clickhouse_runtime_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "domain_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hosted_zone_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "acm_cert_arn": {
+      "type": "string",
+      "minLength": 1
+    },
+    "create_dns_record": {
+      "type": "boolean"
+    },
+    "instance_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "connect_group_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mongo_uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "connector_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "connector_config": {
+      "type": "object"
+    },
+    "discover_msk_sg_by_name": {
+      "type": "boolean"
+    },
+    "msk_sg_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "connect_port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "grafana_port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "key_name": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "mongo_connector_class": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

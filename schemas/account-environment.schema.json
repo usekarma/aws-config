@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "environment": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "config_repo": {
+      "type": "string",
+      "minLength": 1
+    },
+    "config_branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "iac_repo": {
+      "type": "string",
+      "minLength": 1
+    },
+    "iac_branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lambda_repo": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lambda_branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "iac_strict": {
+      "type": "boolean"
+    },
+    "lambda_strict": {
+      "type": "boolean"
+    },
+    "allow_drift": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "name",
+    "environment",
+    "config_repo",
+    "config_branch",
+    "iac_repo",
+    "iac_branch"
+  ],
+  "additionalProperties": false
+}

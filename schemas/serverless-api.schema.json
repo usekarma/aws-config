@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "serverless-api configuration",
+  "type": "object",
+  "minProperties": 1,
+  "properties": {
+    "api_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stage_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "openapi": {
+      "type": "string",
+      "minLength": 1
+    },
+    "enable_custom_domain": {
+      "type": "boolean"
+    },
+    "domain_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "route53_zone_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "api_name",
+    "openapi"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "enable_custom_domain": {
+            "const": true
+          }
+        },
+        "required": [
+          "enable_custom_domain"
+        ]
+      },
+      "then": {
+        "required": [
+          "route53_zone_name",
+          "domain_name"
+        ]
+      }
+    }
+  ]
+}

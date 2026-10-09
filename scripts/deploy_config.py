@@ -3,14 +3,18 @@
 import argparse
 import json
 import pathlib
-import boto3
+from mutation_guard import approved_session
+from config_validation import ROOT, load_json, validate_config
 import sys
 import os
 
-get_prefix = lambda: os.getenv("IAC_PREFIX", "/iac")
+
+def get_prefix():
+    return os.getenv("IAC_PREFIX", "/iac")
+
 
 def get_environment_metadata(param_name=None):
-    ssm = boto3.client("ssm")
+    ssm = approved_session().client("ssm")
     param_name = param_name or f"{get_prefix()}/environment"
     try:
         response = ssm.get_parameter(Name=param_name, WithDecryption=False)
@@ -21,30 +25,44 @@ def get_environment_metadata(param_name=None):
     except Exception as e:
         sys.exit(f"❌ Failed to load environment parameter {param_name}: {e}")
 
+
 def load_config(env_type, component, nickname):
-    config_file = pathlib.Path("iac") / env_type / component / nickname / "config.json"
+    config_file = (
+        pathlib.Path(__file__).resolve().parents[1]
+        / "iac"
+        / env_type
+        / component
+        / nickname
+        / "config.json"
+    )
     if not config_file.exists():
         sys.exit(f"❌ Missing config file: {config_file}")
-    return json.loads(config_file.read_text())
+    value = load_json(config_file)
+    validate_config(config_file.relative_to(ROOT), value)
+    return value
+
 
 def write_param(param_name, config_data):
-    ssm = boto3.client("ssm")
+    ssm = approved_session().client("ssm")
     try:
         ssm.put_parameter(
             Name=param_name,
             Value=json.dumps(config_data, separators=(",", ":")),
             Type="String",
             Overwrite=True,
-            Tier="Standard"
+            Tier="Standard",
         )
         print(f"✅ Deployed config to {param_name}")
     except Exception as e:
         sys.exit(f"❌ Failed to deploy parameter {param_name}: {e}")
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--component", required=True, help="Component name (e.g. serverless-site)")
-    parser.add_argument("--nickname", required=True, help="Nickname or instance name (e.g. karma-api)")
+    parser.add_argument(
+        "--nickname", required=True, help="Nickname or instance name (e.g. karma-api)"
+    )
     args = parser.parse_args()
 
     metadata = get_environment_metadata()
@@ -53,6 +71,7 @@ def main():
     param_name = f"{get_prefix()}/{args.component}/{args.nickname}/config"
     config = load_config(env_type, args.component, args.nickname)
     write_param(param_name, config)
+
 
 if __name__ == "__main__":
     main()

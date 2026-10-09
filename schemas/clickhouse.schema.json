@@ -1,0 +1,428 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "clickhouse configuration",
+  "type": "object",
+  "minProperties": 1,
+  "properties": {
+    "vpc_nickname": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "instance_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ebs_size_gb": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "allowed_security_group_ids": {
+      "type": "array"
+    },
+    "allowed_cidrs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "cidr"
+      }
+    },
+    "s3_bucket_nickname": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "s3_bucket_prefix": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cognito_sso_nickname": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "kafka_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "debezium_mongodb_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "aws_msk_iam_auth_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ecs_cluster_nickname": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "kconnect_service_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kconnect_desired_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "kconnect_cpu": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "kconnect_memory": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "kconnect_platform_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kconnect_assign_public_ip": {
+      "type": "boolean"
+    },
+    "clickhouse_only": {
+      "type": "boolean"
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "alb_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "clickhouse_host": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "clickhouse_version": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "domain_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ebs_iops": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "ebs_throughput": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "ebs_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "enable_kconnect": {
+      "type": "boolean"
+    },
+    "enable_mongo": {
+      "type": "boolean"
+    },
+    "enable_redpanda": {
+      "type": "boolean"
+    },
+    "grafana_admin": {
+      "type": "string",
+      "minLength": 1
+    },
+    "grafana_host": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "grafana_pass": {
+      "type": "string",
+      "minLength": 1
+    },
+    "grafana_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "http_port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "kconnect": {
+      "type": "object"
+    },
+    "kconnect_config_topic": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kconnect_group_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kconnect_metrics_image": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "kconnect_offset_topic": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kconnect_status_topic": {
+      "type": "string",
+      "minLength": 1
+    },
+    "key_name": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "logout_assign_public_ip": {
+      "type": "boolean"
+    },
+    "logout_cookie_domain": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logout_cpu": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "logout_desired_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "logout_image": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "logout_log_retention_days": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "logout_memory": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "logout_platform_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logout_repo": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logout_service_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logout_tag": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mongo_allowed_cidrs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "cidr"
+      }
+    },
+    "mongo_allowed_security_group_ids": {
+      "type": "array"
+    },
+    "mongo_exporter_port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "mongo_exporter_ver": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "mongo_express": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "mongo_express_assign_public_ip": {
+      "type": "boolean"
+    },
+    "mongo_express_cpu": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "mongo_express_desired_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "mongo_express_image": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mongo_express_log_retention_days": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "mongo_express_memory": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "mongo_express_platform_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mongo_express_service_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mongo_gen_branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mongo_gen_repo_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mongo_gen_token_param": {
+      "type": "string"
+    },
+    "mongo_instance_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mongo_iops": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "mongo_major": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "mongo_nodeexp_port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "mongo_nodeexp_ver": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "mongo_port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "mongo_rs_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mongo_throughput": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "mongo_volume_gb": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prometheus_ds_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prometheus_host": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "prometheus_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "redpanda_admin_port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "redpanda_console": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    },
+    "redpanda_console_assign_public_ip": {
+      "type": "boolean"
+    },
+    "redpanda_console_cpu": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "redpanda_console_desired_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "redpanda_console_image": {
+      "type": "string",
+      "minLength": 1
+    },
+    "redpanda_console_log_retention_days": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "redpanda_console_memory": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "redpanda_console_platform_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "redpanda_console_service_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "redpanda_exporter_port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "redpanda_instance_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "redpanda_iops": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "redpanda_node_port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "redpanda_partitions": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "redpanda_port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "redpanda_retention": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "redpanda_throughput": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "redpanda_topic": {
+      "type": "string",
+      "minLength": 1
+    },
+    "redpanda_volume_gb": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "tcp_port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "zone_id": {
+      "description": "Optional implementation input; type not constrained yet. Review component code."
+    }
+  },
+  "required": [
+    "vpc_nickname",
+    "s3_bucket_nickname",
+    "s3_bucket_prefix",
+    "cognito_sso_nickname",
+    "ecs_cluster_nickname"
+  ],
+  "additionalProperties": false
+}
