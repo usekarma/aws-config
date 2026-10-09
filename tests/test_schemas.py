@@ -34,6 +34,22 @@ class SchemaTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validation.validate_config(path, value)
 
+    def test_iot_digital_twin_contract(self):
+        path = Path("iac/dev/iot-digital-twin/core2-aws-001/config.json")
+        original = validation.load_json(validation.ROOT / path)
+        validation.validate_config(path, original)
+
+        invalids = (
+            {"mqtt_topic": "devices/other/topic"},
+            {"telemetry_rate_hz": 2.0},
+            {"offline_timeout_seconds": 0},
+            {"connectivity_state_server_derived": "yes"},
+            {"secret_value": "do-not-store"},
+        )
+        for edit in invalids:
+            with self.subTest(edit=edit), self.assertRaises(ValueError):
+                validation.validate_config(path, original | edit)
+
     def test_custom_domain_and_lambda_limits(self):
         with self.assertRaises(ValueError):
             validation.schema_validate(
