@@ -36,7 +36,9 @@ def validate_safety(contract):
     criteria = contract.get("acceptance_criteria", {})
     if criteria.get("account_for_all_recurring_spend") is not True:
         fail("account_for_all_recurring_spend must be true")
-    if money(criteria.get("max_unattributed_usd"), "max_unattributed_usd") != Decimal("0.00"):
+    if money(
+        criteria.get("max_unattributed_usd"), "max_unattributed_usd"
+    ) != Decimal("0.00"):
         fail("max_unattributed_usd must be exactly 0.00")
     if criteria.get("remediation_mode") != "proposal_only":
         fail("remediation_mode must be proposal_only")
@@ -101,7 +103,9 @@ def main():
         (validate_target(target, seen_ids, seen_environments) for target in targets),
         Decimal("0.00"),
     )
-    declared_total = money(contract.get("combined_monthly_target_usd"), "combined_monthly_target_usd")
+    declared_total = money(
+        contract.get("combined_monthly_target_usd"), "combined_monthly_target_usd"
+    )
 
     if calculated_total != declared_total:
         fail(
