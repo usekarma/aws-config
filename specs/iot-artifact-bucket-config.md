@@ -1,7 +1,7 @@
 # IoT prototype artifact bucket desired-state publication proposal
 
-Status: validated proposal awaiting human publication review; normal planning
-blocked on a separate minimal read-only IAM grant. No publication/apply authorized.
+Status: IAM prerequisite merged; validated desired state ready for human merge
+and publication review. No publication or workload apply is authorized.
 Owner/reviewer: strall / requesting human.
 
 ## Goal and exact target
@@ -30,11 +30,14 @@ an AWS mutation requiring separate human approval of the exact file/commit/hash
 and target. Git review/merge does not authorize it. AGENT_MODE=1 blocks publishing
 regardless of inherited acknowledgements. Agents never unset that flag to write.
 
-The planning-role read probe was AccessDenied. This does NOT prove the parameter
-is absent. Before authorizing overwrite, the human publisher must use a verified
-publication-capable profile to inspect the current parameter/version privately
-(or record genuine ParameterNotFound), preserve any existing value for recovery,
-and review the proposed change. Do not use AdministratorAccess for workload plans.
+The earlier planning-role probe was AccessDenied and is now historical. After
+the approved IAM maintenance, postflight reported GetParameter permitted;
+ParameterNotFound. A fresh restricted-role read during this finalization also
+returned ParameterNotFound. This is authorization/absence evidence at those reads,
+not a published value or a guarantee against a later concurrent publication.
+Immediately before authorization, the human publisher must inspect again using
+a verified publication-capable profile, preserve any existing value/version/hash
+for recovery, verify local/payload hashes and stop for explicit approval. Do not use AdministratorAccess for workload plans.
 The publication profile requires GetParameter on binding/config and PutParameter
 on the exact config ARN; publication does not change /iac/environment or runtime.
 
@@ -62,12 +65,16 @@ and the live binding itself before writes. Review metadata and exact serialized
 payload/file SHA-256 are prepared privately under ignored artifacts/; no old
 SSM value or raw cloud evidence is committed.
 
-## Minimal normal-planning IAM delta — separate approval, not implemented
+## Completed minimal IAM prerequisite — historical delta
 
-The deployed reviewed IaCPlanReadOnly policy grants GetParameter only on the
-binding and runtime, not this config path. A live strall-dev-plan probe confirmed
-no identity-based Allow for the exact requested resource. Required additional
-statement (no other action/resource or wildcard change):
+The original policy granted binding/runtime reads and the initial config probe
+returned AccessDenied. The minimal resource-only delta was reviewed in aws-iac
+PR #13, planned against the same retained owner (0 creates, 1 update, 0 deletes),
+sealed and applied by the human with explicit saved-plan mutation approval.
+Read-only postflight returned GetParameter permitted; ParameterNotFound.
+PR #13 is merged on aws-iac/main at
+e579a8573051e8d0ef023e893aab69f7851d960e. The approved effective additional grant
+was only (original 24 actions unchanged):
 
 ```json
 {
@@ -77,15 +84,15 @@ statement (no other action/resource or wildcard change):
 }
 ```
 
-This is a proposed delta for an independently reviewed owner-context permission
-set change, not an edit to the existing role/policy or an execution command.
-Preserve the original 24-action policy and all existing grants. No IAM mutation
-or normal plan is performed here; never fall back to AdministratorAccess.
+The delta is deployed and its declarative revision is now on aws-iac/main. No
+further IAM change is requested by this config PR. Normal planning must continue
+using strall-dev-plan; never fall back to AdministratorAccess. The SSM-backed
+workload plan remains a separate post-publication step, not performed here.
 
 ## Prepared post-publication normal plan
 
-Only after separately approved publication, exact-value/version postflight and
-approval/provisioning of the minimal read grant:
+The IAM prerequisite is satisfied. Only after separately approved publication
+and exact-value/version postflight:
 
 ```bash
 cd /home/ted/dev/aws-iac
@@ -133,6 +140,91 @@ File SHA-256: 6b11e56bbd2f60d559dfad21333078750bb22290b55dea53bf8c72501241f72f.
 Serialized publisher payload SHA-256:
 19392f2a293fd6f9165e1dcc4baeae47916f1a57e0d05949a7078ce2526a90bc.
 These hashes identify proposed local input only, not a published SSM value.
-Read-only STS and preflight succeeded; the exact config-path permission probe was
-AccessDenied. No parameter absence, publication, IAM update, normal SSM-backed plan
-or workload execution is claimed.
+At initial preparation, read-only STS/preflight succeeded and the config probe
+was AccessDenied. That finding is historical after the human IAM maintenance.
+During this finalization, a fresh read confirmed authorization with ParameterNotFound.
+No SSM publication, normal SSM-backed workload plan or deployment occurred.
+
+## Publication profile options and mandatory pre-approval review
+
+No publication profile is selected by the agent. Local configuration identifies:
+
+- strall-dev: configured account 623155450153, role AdministratorAccess. This is
+  an existing human publication candidate, not a verified/selected writer; the
+  human must verify actual STS identity and effective publication permissions.
+- strall-dev-plan: same account, IaCPlanReadOnly; read-only and never a publisher.
+
+No dedicated scoped publisher is currently identified. If the human has one,
+independently verify it rather than inventing/configuring a new profile here.
+Other-account profiles are not options for this target. The publisher requires
+binding/config GetParameter plus PutParameter on the one target ARN. No elevated
+profile is used for workload planning. Merge readiness is separate from selecting
+and approving the publication identity/operation.
+
+Before any write, the human must follow this read-only preparation sequence:
+
+1. Set CONFIG_PUBLICATION_PROFILE to the independently selected existing writer.
+2. Verify STS account exactly 623155450153 and binding dev / strall-com-dev.
+3. Inspect the exact config parameter using that profile. ParameterNotFound means
+   no existing-value backup is needed then; AccessDenied/other errors stop review.
+4. If it exists, save the full GetParameter response privately (umask 077, ignored
+   artifacts/). Record parameter version/type, raw value SHA-256 and recovery file
+   location. Never paste its value in chat/PR. Preserve the prior value before
+   approving Overwrite=True; publisher concurrency is not version-conditional.
+5. Verify the local file equals the approved declaration/commit and these hashes:
+   file SHA-256 6b11e56bbd2f60d559dfad21333078750bb22290b55dea53bf8c72501241f72f;
+   serialized Value SHA-256
+   19392f2a293fd6f9165e1dcc4baeae47916f1a57e0d05949a7078ce2526a90bc.
+6. STOP for explicit human approval of the exact profile/account/path/hash and
+   existing-value/overwrite consequences. Only afterward use the publication
+   command above with AGENT_MODE=0 and AWS_MUTATION_APPROVED=1.
+
+Prepared read-only inspection commands (human-selected profile; NOT publication):
+
+```bash
+: "${CONFIG_PUBLICATION_PROFILE:?Select and verify the existing human publisher}"
+aws sts get-caller-identity --profile "$CONFIG_PUBLICATION_PROFILE" \
+  --region us-east-1 --no-cli-pager
+# Require account 623155450153. Inspect binding privately and require dev/strall-com-dev.
+aws ssm get-parameter --profile "$CONFIG_PUBLICATION_PROFILE" \
+  --region us-east-1 --name /iac/s3-bucket/iot-digital-twin-artifacts/config \
+  --query '{Name:Parameter.Name,Version:Parameter.Version,Type:Parameter.Type}' \
+  --no-cli-pager
+# If present, capture the full response privately before approving overwrite.
+```
+
+For an existing value, exact private capture/hash commands from aws-config root:
+
+```bash
+set -euo pipefail
+umask 077
+mkdir -p artifacts
+publication_review_dir=$(mktemp -d "$PWD/artifacts/publication-preflight.XXXXXX")
+aws ssm get-parameter --profile "$CONFIG_PUBLICATION_PROFILE" \
+  --region us-east-1 --name /iac/s3-bucket/iot-digital-twin-artifacts/config \
+  --no-cli-pager > "$publication_review_dir/prior-parameter.json"
+python3 - "$publication_review_dir/prior-parameter.json" <<'PY_REVIEW'
+import hashlib,json,pathlib,sys
+p=json.loads(pathlib.Path(sys.argv[1]).read_text())["Parameter"]
+print(json.dumps({"version":p["Version"],"type":p["Type"],"value_sha256":hashlib.sha256(p["Value"].encode()).hexdigest()}))
+PY_REVIEW
+```
+
+If any read fails, stop; do not infer absence or write using a fallback identity.
+Recheck immediately before publication if review ages or concurrent writers exist.
+The fresh restricted read found no parameter, so no old value was captured by the
+agent; the human writer's immediate check remains required. No bucket deployment,
+ZIP upload, IAM amendment, binding/schema/guard edit or SSM write is performed.
+
+## Finalization verification
+
+Against aws-iac/main at e579a8573051e8d0ef023e893aab69f7851d960e, the local
+implementation tree was verified identical. Full aws-config verification/test
+suites pass: 37 tests with four existing IaC-only skips, all 26 configs/bindings
+validated, selected deployment-ready validation and exact publisher load/proposal
+comparison passed. Both reviewed input hashes are unchanged. No publisher/guard,
+schema, binding or unrelated config changed; only this documentation was updated.
+A fresh restricted STS/preflight/read verified account/binding and ParameterNotFound.
+No write-capable profile was selected, no prior value existed at that read, and
+no SSM publication or workload deployment occurred. Final-head CI is checked
+before marking ready for human merge review; merge itself is not write approval.
