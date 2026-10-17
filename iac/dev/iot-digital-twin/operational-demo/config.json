@@ -1,0 +1,20 @@
+{
+  "mode": "operational-telemetry",
+  "project": "iot-digital-twin",
+  "experiment": "operational-telemetry",
+  "asset_id": "asset-000",
+  "topic": "adage/iot-digital-twin/operational-demo/asset-000/telemetry",
+  "property_alias": "/adage/iot-digital-twin/operational-demo/asset-000/severity",
+  "client_id": "adage-operational-m1",
+  "observation_count": 20,
+  "rate_hz": 1,
+  "region": null,
+  "expected_account": null,
+  "expected_principal": null,
+  "cloudformation_role_arn": null,
+  "planning_dependencies": [
+    "sandbox_binding",
+    "producer_principal",
+    "cloudformation_execution_role"
+  ]
+}

@@ -76,6 +76,20 @@ def validate_deployment_readiness(value, component):
     """Local publication gate, independent of AWS approval and artifact availability."""
     if component == "iot-digital-twin":
         schema_validate(value, component, "simulator readiness")
+        if value.get("mode") == "operational-telemetry":
+            if "planning_dependencies" in value or any(
+                value[k] is None
+                for k in (
+                    "region",
+                    "expected_account",
+                    "expected_principal",
+                    "cloudformation_role_arn",
+                )
+            ):
+                raise ValueError("Deployment blocked: unresolved operational bindings")
+            if value["cloudformation_role_arn"].split(":")[4] != value["expected_account"]:
+                raise ValueError("Deployment blocked: CloudFormation role account mismatch")
+            return
         if "planning_dependencies" in value or any(
             value[key] is None
             for key in ("artifact", "active_session", "expected_principal", "region")
