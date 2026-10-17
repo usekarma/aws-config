@@ -74,6 +74,19 @@ def validate_lambda_metadata(value):
 
 def validate_deployment_readiness(value, component):
     """Local publication gate, independent of AWS approval and artifact availability."""
+    if component == "iot-digital-twin-simulator":
+        schema_validate(value, component, "simulator readiness")
+        if "planning_dependencies" in value or any(
+            value[key] is None
+            for key in ("artifact", "active_session", "expected_principal", "region")
+        ):
+            raise ValueError("Deployment blocked: unresolved simulator bindings")
+        artifact = value["artifact"]
+        digest = artifact["source_code_hash"]
+        decoded = base64.b64decode(digest, validate=True)
+        if len(decoded) != 32 or base64.b64encode(decoded).decode() != digest:
+            raise ValueError("Simulator artifact hash must be canonical base64 SHA256")
+        return
     if component not in ("lambda", "iot-digital-twin"):
         return
     if component == "iot-digital-twin" and "ingest_function" not in value:

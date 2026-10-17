@@ -1,0 +1,20 @@
+{
+  "project": "iot-digital-twin",
+  "experiment": "atom-lite-simulator",
+  "model_commit": "8e2f732127ce19936711346d3c1a50ed3b9b728a",
+  "region": null,
+  "active_session": null,
+  "expected_principal": null,
+  "artifact": null,
+  "planning_dependencies": [
+    "artifact_publication",
+    "trusted_principal",
+    "active_session",
+    "sandbox_binding"
+  ],
+  "tags": {
+    "Project": "iot-digital-twin",
+    "Experiment": "atom-lite-simulator",
+    "Environment": "sandbox"
+  }
+}
