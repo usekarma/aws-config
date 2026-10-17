@@ -6,14 +6,24 @@ from pathlib import Path
 import config_validation as validation
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENT = "iot-digital-twin-simulator"
+COMPONENT = "iot-digital-twin"
 
 
 class SimulatorContractTests(unittest.TestCase):
     def setUp(self):
         self.value = json.loads(
-            (ROOT / "iac/dev/iot-digital-twin-simulator/atom-lite-001/config.json").read_text()
+            (ROOT / "iac/dev/iot-digital-twin/atom-lite-001/config.json").read_text()
         )
+
+    def test_canonical_discovery_rejects_retired_core2(self):
+        archived = ROOT / "archive/core2/core2-aws-001/config.json"
+        value = json.loads(archived.read_text())
+        with self.assertRaises(ValueError):
+            validation.validate_config("iac/dev/iot-digital-twin/core2-aws-001/config.json", value)
+        with self.assertRaises(ValueError):
+            validation.validate_deployment_readiness(value, COMPONENT)
+        self.assertFalse((ROOT / "iac/dev/iot-digital-twin/core2-aws-001").exists())
+        self.assertFalse((ROOT / "iac/dev/iot-digital-twin-simulator").exists())
 
     def resolved(self):
         value = copy.deepcopy(self.value)

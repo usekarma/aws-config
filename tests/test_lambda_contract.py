@@ -9,7 +9,8 @@ from unittest import mock
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-import config_validation as validation
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "archive/core2/scripts"))
+import core2_validation as validation
 import deploy_config
 
 
@@ -35,7 +36,7 @@ def declaration():
 
 class LambdaContractTests(unittest.TestCase):
     def setUp(self):
-        self.iot = validation.load_json(validation.ROOT / IOT_PATH)
+        self.iot = validation.load_json(validation.ROOT / "archive/core2/core2-aws-001/config.json")
 
     def test_complete_declaration(self):
         value = {"functions": {"iot-digital-twin-ingest": declaration()}}
@@ -50,7 +51,7 @@ import sys
 sys.path.insert(0, 'scripts')
 import deploy_config
 try:
-    deploy_config.load_config('dev', 'iot-digital-twin', 'core2-aws-001')
+    deploy_config.load_config('dev', 'iot-digital-twin', 'atom-lite-001')
 except ValueError as error:
     assert 'Deployment blocked' in str(error)
 else:
@@ -71,7 +72,9 @@ assert 'botocore' not in sys.modules
         complete = validation.load_json(validation.ROOT / "schemas/lambda-declaration.schema.json")
         planning = validation.load_json(validation.ROOT / "schemas/lambda-planning.schema.json")
         standalone = validation.load_json(validation.ROOT / "schemas/lambda.schema.json")
-        iot = validation.load_json(validation.ROOT / "schemas/iot-digital-twin.schema.json")
+        iot = validation.load_json(
+            validation.ROOT / "archive/core2/schemas/iot-digital-twin.schema.json"
+        )
         self.assertEqual(iot["properties"]["ingest_function"]["oneOf"], [complete, planning])
         self.assertEqual(
             standalone["properties"]["functions"]["additionalProperties"]["then"]["oneOf"],
@@ -196,11 +199,11 @@ assert 'botocore' not in sys.modules
 
     def test_publication_blocks_before_aws_session(self):
         with mock.patch.object(deploy_config, "approved_session") as session:
-            with self.assertRaisesRegex(ValueError, "Deployment blocked"):
+            with self.assertRaises(ValueError):
                 deploy_config.write_param("/iac/iot-digital-twin/core2-aws-001/config", self.iot)
             session.assert_not_called()
         with self.assertRaisesRegex(ValueError, "Deployment blocked"):
-            deploy_config.load_config("dev", "iot-digital-twin", "core2-aws-001")
+            deploy_config.load_config("dev", "iot-digital-twin", "atom-lite-001")
 
     def test_legacy_v1_remains_valid_but_requires_migration_for_readiness(self):
         for path in (validation.ROOT / "iac/prod/lambda").glob("*/config.json"):

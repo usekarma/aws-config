@@ -4,7 +4,9 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-import config_validation as validation
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "archive/core2/scripts"))
+import core2_validation as validation
+import config_validation as active_validation
 
 
 class SchemaTests(unittest.TestCase):
@@ -13,7 +15,7 @@ class SchemaTests(unittest.TestCase):
         paths += list((validation.ROOT / "account_environments").glob("*.json"))
         for path in paths:
             with self.subTest(path=path):
-                validation.validate_config(
+                active_validation.validate_config(
                     path.relative_to(validation.ROOT), validation.load_json(path)
                 )
 
@@ -36,7 +38,7 @@ class SchemaTests(unittest.TestCase):
 
     def test_iot_digital_twin_contract(self):
         path = Path("iac/dev/iot-digital-twin/core2-aws-001/config.json")
-        original = validation.load_json(validation.ROOT / path)
+        original = validation.load_json(validation.ROOT / "archive/core2/core2-aws-001/config.json")
         validation.validate_config(path, original)
 
         invalids = (

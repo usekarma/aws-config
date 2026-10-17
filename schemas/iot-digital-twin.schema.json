@@ -1,364 +1,135 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "iot-digital-twin sandbox configuration",
-    "type": "object",
-    "minProperties": 1,
-    "properties": {
-        "project": {
-            "type": "string",
-            "minLength": 1
-        },
-        "region": {
-            "type": "string",
-            "pattern": "^[a-z]{2}-[a-z]+-[0-9]$",
-            "minLength": 1
-        },
-        "device_id": {
-            "type": "string",
-            "pattern": "^[a-z0-9-]+$",
-            "minLength": 1
-        },
-        "thing_name": {
-            "type": "string",
-            "pattern": "^[a-z0-9-]+$",
-            "minLength": 1
-        },
-        "mqtt_topic": {
-            "type": "string",
-            "pattern": "^devices/[a-z0-9-]+/telemetry$",
-            "minLength": 1
-        },
-        "iot_rule_name": {
-            "type": "string",
-            "pattern": "^[a-z0-9-]+$",
-            "minLength": 1
-        },
-        "ingest_lambda_name": {
-            "type": "string",
-            "pattern": "^[a-z0-9-]+$",
-            "minLength": 1
-        },
-        "latest_state_table_name": {
-            "type": "string",
-            "pattern": "^[a-z0-9-]+$",
-            "minLength": 1
-        },
-        "twinmaker_workspace_name": {
-            "type": "string",
-            "pattern": "^[a-z0-9-]+$",
-            "minLength": 1
-        },
-        "twinmaker_entity_name": {
-            "type": "string",
-            "pattern": "^[a-z0-9-]+$",
-            "minLength": 1
-        },
-        "twinmaker_component_name": {
-            "type": "string",
-            "pattern": "^[a-z0-9-]+$",
-            "minLength": 1
-        },
-        "twinmaker_component_type": {
-            "type": "string",
-            "pattern": "^[a-z0-9-]+$",
-            "minLength": 1
-        },
-        "telemetry_rate_hz": {
-            "type": "number",
-            "minimum": 0.1,
-            "maximum": 1
-        },
-        "offline_timeout_seconds": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 600
-        },
-        "max_clock_skew_seconds": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 60
-        },
-        "cloudwatch_log_retention_days": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 3653
-        },
-        "device_certificate_authoritative": {
-            "type": "boolean"
-        },
-        "device_id_is_data_only": {
-            "type": "boolean"
-        },
-        "reject_device_authored_offline": {
-            "type": "boolean"
-        },
-        "connectivity_state_server_derived": {
-            "type": "boolean"
-        },
-        "server_replay_and_stale_enforcement": {
-            "type": "boolean"
-        },
-        "max_retry_attempts": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 3
-        },
-        "least_privilege_iam": {
-            "type": "boolean"
-        },
-        "no_broad_permission_fallback": {
-            "type": "boolean"
-        },
-        "tags": {
-            "type": "object",
-            "additionalProperties": {
-                "type": "string"
-            }
-        },
-        "ingest_function": {
-            "oneOf": [
-                {
-                    "$schema": "https://json-schema.org/draft/2020-12/schema",
-                    "title": "Lambda declaration v1",
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                        "runtime",
-                        "handler",
-                        "memory_size",
-                        "timeout",
-                        "log_retention_days",
-                        "artifact"
-                    ],
-                    "properties": {
-                        "runtime": {
-                            "type": "string",
-                            "pattern": "^[a-z][a-z0-9.]+$"
-                        },
-                        "handler": {
-                            "type": "string",
-                            "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$"
-                        },
-                        "memory_size": {
-                            "type": "integer",
-                            "minimum": 128,
-                            "maximum": 10240
-                        },
-                        "timeout": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "maximum": 900
-                        },
-                        "log_retention_days": {
-                            "enum": [
-                                1,
-                                3,
-                                5,
-                                7,
-                                14,
-                                30,
-                                60,
-                                90,
-                                120,
-                                150,
-                                180,
-                                365,
-                                400,
-                                545,
-                                731,
-                                1096,
-                                1827,
-                                2192,
-                                2557,
-                                2922,
-                                3288,
-                                3653
-                            ]
-                        },
-                        "environment": {
-                            "type": "object",
-                            "propertyNames": {
-                                "pattern": "^[A-Za-z][A-Za-z0-9_]+$"
-                            },
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        },
-                        "artifact": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "required": [
-                                "s3_bucket",
-                                "s3_key",
-                                "s3_object_version",
-                                "source_code_hash"
-                            ],
-                            "properties": {
-                                "s3_bucket": {
-                                    "type": "string",
-                                    "pattern": "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
-                                },
-                                "s3_key": {
-                                    "type": "string",
-                                    "pattern": "^(?!.*(?:^|/)empty\\.zip$).+\\.zip$"
-                                },
-                                "s3_object_version": {
-                                    "type": "string",
-                                    "minLength": 1,
-                                    "not": {
-                                        "enum": [
-                                            "null",
-                                            "latest"
-                                        ]
-                                    }
-                                },
-                                "source_code_hash": {
-                                    "type": "string",
-                                    "pattern": "^[A-Za-z0-9+/]{43}=$"
-                                }
-                            }
-                        },
-                        "src_type": {
-                            "type": "string",
-                            "pattern": "^[a-zA-Z0-9_-]+$"
-                        },
-                        "src_nickname": {
-                            "type": "string",
-                            "pattern": "^[a-zA-Z0-9_-]+$"
-                        },
-                        "vpc_nickname": {
-                            "type": "string",
-                            "pattern": "^[a-zA-Z0-9_-]+$"
-                        }
-                    }
-                },
-                {
-                    "$schema": "https://json-schema.org/draft/2020-12/schema",
-                    "title": "Incomplete Lambda planning declaration",
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                        "runtime",
-                        "handler",
-                        "memory_size",
-                        "timeout",
-                        "log_retention_days",
-                        "artifact",
-                        "planning_dependencies"
-                    ],
-                    "properties": {
-                        "runtime": {
-                            "type": "string",
-                            "pattern": "^[a-z][a-z0-9.]+$"
-                        },
-                        "handler": {
-                            "type": "string",
-                            "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$"
-                        },
-                        "memory_size": {
-                            "type": "integer",
-                            "minimum": 128,
-                            "maximum": 10240
-                        },
-                        "timeout": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "maximum": 900
-                        },
-                        "log_retention_days": {
-                            "enum": [
-                                1,
-                                3,
-                                5,
-                                7,
-                                14,
-                                30,
-                                60,
-                                90,
-                                120,
-                                150,
-                                180,
-                                365,
-                                400,
-                                545,
-                                731,
-                                1096,
-                                1827,
-                                2192,
-                                2557,
-                                2922,
-                                3288,
-                                3653
-                            ]
-                        },
-                        "environment": {
-                            "type": "object",
-                            "propertyNames": {
-                                "pattern": "^[A-Za-z][A-Za-z0-9_]+$"
-                            },
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        },
-                        "artifact": {
-                            "type": "null"
-                        },
-                        "src_type": {
-                            "type": "string",
-                            "pattern": "^[a-zA-Z0-9_-]+$"
-                        },
-                        "src_nickname": {
-                            "type": "string",
-                            "pattern": "^[a-zA-Z0-9_-]+$"
-                        },
-                        "vpc_nickname": {
-                            "type": "string",
-                            "pattern": "^[a-zA-Z0-9_-]+$"
-                        },
-                        "planning_dependencies": {
-                            "type": "array",
-                            "uniqueItems": true,
-                            "minItems": 1,
-                            "items": {
-                                "enum": [
-                                    "artifact_publication",
-                                    "trusted_principal"
-                                ]
-                            },
-                            "contains": {
-                                "const": "artifact_publication"
-                            }
-                        }
-                    }
-                }
-            ]
-        }
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "project",
+    "experiment",
+    "model_commit",
+    "active_session",
+    "expected_principal",
+    "region",
+    "artifact",
+    "tags"
+  ],
+  "properties": {
+    "project": {
+      "const": "iot-digital-twin"
     },
-    "required": [
-        "project",
-        "region",
-        "device_id",
-        "thing_name",
-        "mqtt_topic",
-        "iot_rule_name",
-        "ingest_lambda_name",
-        "latest_state_table_name",
-        "twinmaker_workspace_name",
-        "twinmaker_entity_name",
-        "twinmaker_component_name",
-        "twinmaker_component_type",
-        "telemetry_rate_hz",
-        "offline_timeout_seconds",
-        "max_clock_skew_seconds",
-        "cloudwatch_log_retention_days",
-        "device_certificate_authoritative",
-        "device_id_is_data_only",
-        "reject_device_authored_offline",
-        "connectivity_state_server_derived",
-        "server_replay_and_stale_enforcement",
-        "max_retry_attempts",
-        "least_privilege_iam",
-        "no_broad_permission_fallback"
-    ],
-    "additionalProperties": false
+    "experiment": {
+      "const": "atom-lite-simulator"
+    },
+    "model_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "active_session": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
+        }
+      ]
+    },
+    "expected_principal": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      ]
+    },
+    "region": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[a-z]{2}(-[a-z]+)+-[0-9]+$"
+        }
+      ]
+    },
+    "artifact": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "s3_bucket",
+            "s3_key",
+            "s3_object_version",
+            "source_code_hash"
+          ],
+          "properties": {
+            "s3_bucket": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
+            },
+            "s3_key": {
+              "type": "string",
+              "pattern": "(^|/)iot-digital-twin-simulator\\.zip$"
+            },
+            "s3_object_version": {
+              "type": "string",
+              "minLength": 1,
+              "not": {
+                "enum": [
+                  "null",
+                  "latest"
+                ]
+              }
+            },
+            "source_code_hash": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9+/]{43}=$"
+            }
+          }
+        }
+      ]
+    },
+    "planning_dependencies": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "artifact_publication",
+          "trusted_principal",
+          "active_session",
+          "sandbox_binding"
+        ]
+      }
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Project",
+        "Experiment",
+        "Environment"
+      ],
+      "properties": {
+        "Project": {
+          "const": "iot-digital-twin"
+        },
+        "Experiment": {
+          "const": "atom-lite-simulator"
+        },
+        "Environment": {
+          "const": "sandbox"
+        }
+      }
+    }
+  }
 }

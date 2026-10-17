@@ -1,3 +1,5 @@
+> Historical Core2 design: the device is retired. See [active ATOM Lite declaration](iot-digital-twin-simulator.md). This document is not an active deployment requirement. The original configuration is archived at `archive/core2/core2-aws-001/config.json`.
+
 # IoT digital-twin sandbox desired state
 
 Status: draft / review-only, not deployed
