@@ -74,10 +74,21 @@ def validate_lambda_metadata(value):
 
 def validate_deployment_readiness(value, component):
     """Local publication gate, independent of AWS approval and artifact availability."""
-    if component not in ("lambda", "iot-digital-twin"):
+    if component == "iot-digital-twin":
+        schema_validate(value, component, "simulator readiness")
+        if "planning_dependencies" in value or any(
+            value[key] is None
+            for key in ("artifact", "active_session", "expected_principal", "region")
+        ):
+            raise ValueError("Deployment blocked: unresolved simulator bindings")
+        artifact = value["artifact"]
+        digest = artifact["source_code_hash"]
+        decoded = base64.b64decode(digest, validate=True)
+        if len(decoded) != 32 or base64.b64encode(decoded).decode() != digest:
+            raise ValueError("Simulator artifact hash must be canonical base64 SHA256")
         return
-    if component == "iot-digital-twin" and "ingest_function" not in value:
-        raise ValueError("Deployment blocked: missing Lambda declaration")
+    if component != "lambda":
+        return
     declarations = lambda_declarations(value)
     if not declarations:
         raise ValueError("Deployment blocked: missing Lambda declaration")
@@ -86,48 +97,6 @@ def validate_deployment_readiness(value, component):
             raise ValueError("Deployment blocked: unresolved Lambda planning dependencies")
         schema_validate(declaration, "lambda-declaration", "deployment readiness")
     validate_lambda_metadata(value)
-    if component == "iot-digital-twin":
-        validate_iot_lambda(value, ready=True)
-
-
-def validate_iot_lambda(value, ready=False):
-    declaration = value.get("ingest_function")
-    if declaration is None:
-        return  # Legacy v1 remains representable; readiness requires a declaration.
-    env = declaration.get("environment", {})
-    dependencies = declaration.get("planning_dependencies", [])
-    if (
-        declaration["runtime"] != "python3.12"
-        or declaration["handler"] != "app.lambda_handler"
-        or declaration["log_retention_days"] != value["cloudwatch_log_retention_days"]
-        or value["device_id"] != value["thing_name"]
-        or value["mqtt_topic"] != f"devices/{value['device_id']}/telemetry"
-        or env.get("EXPECTED_DEVICE_ID") != value["thing_name"]
-        or env.get("LATEST_STATE_TABLE") != value["latest_state_table_name"]
-        or env.get("MAX_CLOCK_SKEW_SECONDS") != str(value["max_clock_skew_seconds"])
-        or any(
-            value[key] is not True
-            for key in (
-                "device_certificate_authoritative",
-                "device_id_is_data_only",
-                "reject_device_authored_offline",
-                "connectivity_state_server_derived",
-                "server_replay_and_stale_enforcement",
-                "least_privilege_iam",
-                "no_broad_permission_fallback",
-            )
-        )
-    ):
-        raise ValueError("IoT Lambda runtime, identity, retention or trust contract mismatch")
-    if (ready or "trusted_principal" not in dependencies) and not env.get(
-        "EXPECTED_PRINCIPAL", ""
-    ).strip():
-        raise ValueError("IoT Lambda trusted principal is unresolved")
-    if (
-        declaration.get("artifact") is not None
-        and Path(declaration["artifact"]["s3_key"]).name != "iot-digital-twin-ingest.zip"
-    ):
-        raise ValueError("IoT Lambda requires the merged ingestion package")
 
 
 def validate_config(path, value):
@@ -146,8 +115,6 @@ def validate_config(path, value):
         raise ValueError(f"{path}: invalid component/nickname")
     schema_validate(value, component, path)
     validate_lambda_metadata(value)
-    if component == "iot-digital-twin":
-        validate_iot_lambda(value)
     bindings = [load_json(p)["environment"] for p in (ROOT / "account_environments").glob("*.json")]
     if env not in bindings:
         raise ValueError(f"{path}: environment has no local account binding")
