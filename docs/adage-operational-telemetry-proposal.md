@@ -57,3 +57,19 @@ $15–25/month with editor/viewer/optional automation-license assumptions, $30 a
 proposal. Alert is not a cap. Use current [SiteWise](https://aws.amazon.com/iot-sitewise/pricing/),
 [IoT](https://aws.amazon.com/iot-core/pricing/) and [Grafana](https://aws.amazon.com/grafana/pricing/)
 rates for the actual plan. Local tests are not proof of live permission or resource absence.
+
+## M1 implementation handoff
+
+The implementation branch adds an explicit disjoint operational schema branch while
+preserving all valid durable simulator declarations (additive contract v1 change).
+`iac/dev/iot-digital-twin/operational-demo/config.json` fixes one asset, 20 observations,
+1Hz, exact topic/alias/client ID. Region/account, producer certificate ID and pre-existing
+reviewed CloudFormation execution role remain null and fail deployment readiness.
+No SSM values, credentials or AWS resources have been published/created.
+
+Pinned provider 6.69.1 lacks both native SiteWise assets and the SiteWise rule action.
+Terraform therefore owns one CloudFormation stack for model/asset/native rule. The
+execution role is an explicit binding, not created here; its permissions require
+separate review/authorization. It must be in the verified target account. Published
+runtime contains only region/account, IDs, topic, alias and client ID. Local TLS paths
+are operator inputs outside configuration; do not reuse ATOM credentials.
