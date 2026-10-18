@@ -1,0 +1,17 @@
+{
+  "mode": "operational-telemetry",
+  "project": "iot-digital-twin",
+  "experiment": "operational-telemetry",
+  "asset_id": "asset-000",
+  "topic": "adage/iot-digital-twin/operational-demo/asset-000/telemetry",
+  "property_alias": "/adage/iot-digital-twin/operational-demo/asset-000/severity",
+  "client_id": "adage-operational-m1",
+  "observation_count": 20,
+  "rate_hz": 1,
+  "region": "us-east-1",
+  "expected_account": "623155450153",
+  "expected_principal": "0c9637e22245804a6da20f3a6b888420b4057b4d52862947ee0c9a485a8551f0",
+  "cloudformation_role_arn": null,
+  "deployment_stage": "service-role-bootstrap",
+  "awscc_request_tags_verified": false
+}

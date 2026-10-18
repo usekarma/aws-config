@@ -77,6 +77,19 @@ def validate_deployment_readiness(value, component):
     if component == "iot-digital-twin":
         schema_validate(value, component, "simulator readiness")
         if value.get("mode") == "operational-telemetry":
+            if value.get("deployment_stage") == "service-role-bootstrap":
+                if (
+                    value.get("expected_account") != "623155450153"
+                    or value.get("region") != "us-east-1"
+                    or "planning_dependencies" in value
+                    or value.get("expected_principal") is None
+                ):
+                    raise ValueError("Deployment blocked: unresolved bootstrap identity/target")
+                return
+            if value.get("deployment_stage") == "operational" and not value.get(
+                "awscc_request_tags_verified"
+            ):
+                raise ValueError("Deployment blocked: AWSCC request-tag behavior unverified")
             if "planning_dependencies" in value or any(
                 value[k] is None
                 for k in (
